@@ -17,28 +17,28 @@ export default {
       register: "/auth/local/register",
       userValidation: "/auth/send-email-confirmation",
       forgotPwd: "/auth/forgot-password",
-      resetPwd: "/auth/reset-password"
+      resetPwd: "/auth/reset-password",
     },
     env_name: process.env.NODE_ENV === "dev" ? "dev" : "prod",
     base_image_url: {
       categorie: base + "/img/categories",
-      produit: base + "/img/produits"
-    }
+      produit: base + "/img/produits",
+    },
   },
   /**
    * Gitlab
    */
   router: {
-    base
+    base,
   },
   generate: {
-    dir: "public"
+    dir: "public",
   },
   /*
    ** Nuxt rendering mode
    ** See https://nuxtjs.org/api/configuration-mode
    */
-  mode: "spa",
+  ssr: false,
   /*
    ** Custom page transition
    */
@@ -56,7 +56,7 @@ export default {
    */
   loading: {
     color: "#174069",
-    height: "5px"
+    height: "5px",
   },
   /*
    ** Headers of the page
@@ -70,24 +70,23 @@ export default {
       {
         hid: "description",
         name: "description",
-        content: process.env.npm_package_description || ""
-      }
+        content: process.env.npm_package_description || "",
+      },
     ],
     link: [
       { rel: "icon", type: "image/x-icon", href: "/favicon.ico" },
       {
         rel: "stylesheet",
-        href:
-          "https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
-      }
-    ]
+        href: "https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css",
+      },
+    ],
   },
   /*
    ** Global CSS
    */
   css: ["~/assets/global.scss", "~/assets/scss/animation.scss"],
   styleRessources: {
-    scss: ["./assets/scss/vars/*.scss"]
+    scss: ["./assets/scss/vars/*.scss"],
   },
   /*
    ** Plugins to load before mounting the App
@@ -111,11 +110,11 @@ export default {
     [
       "bootstrap-vue/nuxt",
       {
-        icons: true
-      }
+        icons: true,
+      },
     ],
     // Doc: https://axios.nuxtjs.org/usage
-    "@nuxtjs/axios"
+    "@nuxtjs/axios",
   ],
   /*
    ** Axios module configuration
@@ -125,11 +124,11 @@ export default {
     baseURL:
       process.env.NODE_ENV === "dev"
         ? "http://localhost:1337"
-        : "https://shopping-list-bdd.herokuapp.com"
+        : "https://shopping-list-bdd.herokuapp.com",
   },
   /*
    ** Build configuration
    ** See https://nuxtjs.org/api/configuration-build/
    */
-  build: {}
+  build: {},
 };
