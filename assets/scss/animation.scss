@@ -1,0 +1,84 @@
+@import "~assets/scss/vars/vars";
+
+$t-duration: 600ms;
+$t-delay: 300ms;
+
+.balayage-enter-active,
+.balayage-leave-active {
+  transition-duration: $t-duration * 2;
+
+  &::before,
+  &::after {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    display: block;
+    width: 100%;
+    height: 50%;
+    transition-property: opacity, transform;
+    transition-timing-function: ease-in-out;
+  }
+
+  &::before {
+    background-color: $primary;
+  }
+
+  &::after {
+    top: 50%;
+    background-color: $primary;
+  }
+}
+
+.balayage-leave {
+  &::before,
+  &::after {
+    transform: scaleX(0);
+  }
+}
+
+.balayage-leave-active {
+  &::before {
+    transition-duration: $t-duration;
+  }
+
+  &::after {
+    transition-duration: $t-duration - $t-delay;
+    transition-delay: $t-delay;
+  }
+}
+
+.balayage-leave-to {
+  &::before,
+  &::after {
+    transform: scale(1);
+    transform-origin: left;
+  }
+}
+
+.balayage-enter {
+  &::before,
+  &::after {
+    transform: scaleX(1);
+  }
+}
+
+.balayage-enter-active {
+  &::before {
+    transition-duration: $t-duration;
+  }
+
+  &::after {
+    transition-duration: $t-duration - $t-delay;
+    transition-delay: $t-delay;
+  }
+}
+
+.balayage-enter-to {
+  &::before,
+  &::after {
+    transform: scaleX(0);
+    transform-origin: right;
+  }
+}

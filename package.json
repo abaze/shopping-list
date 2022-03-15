@@ -1,0 +1,26 @@
+{
+  "name": "shoppingListFront",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "cross-env NODE_ENV=dev nuxt",
+    "build": "nuxt build",
+    "start": "nuxt start",
+    "generate": "nuxt generate"
+  },
+  "dependencies": {
+    "@nuxtjs/axios": "^5.12.0",
+    "bootstrap": "^4.5.0",
+    "bootstrap-vue": "^2.15.0",
+    "chart.js": "^2.9.3",
+    "node-sass": "^4.14.1",
+    "nuxt": "^2.14.0",
+    "progressbar.js": "^1.1.0",
+    "sass-loader": "^10.0.2",
+    "vue-chartjs": "^3.5.1"
+  },
+  "devDependencies": {
+    "@nuxtjs/style-resources": "^1.0.0",
+    "cross-env": "^7.0.2"
+  }
+}

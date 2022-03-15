@@ -1,0 +1,78 @@
+@import "~assets/scss/vars/vars";
+@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500&display=swap");
+
+/* INIT */
+body {
+  font-family: "Roboto", sans-serif;
+}
+
+/* POSITION */
+.top-0 {
+  top: 0;
+}
+.right-0 {
+  right: 0;
+}
+.bottom-0 {
+  bottom: 0;
+}
+.left-0 {
+  left: 0;
+}
+
+/* Class Size */
+.min-w-300 {
+  min-width: 300px;
+}
+/* Class Cursor */
+.cursor-pointer {
+  cursor: pointer;
+}
+/* Class Bg Color */
+.bg-color-primary {
+  background-color: $primary;
+  color: #fff;
+}
+
+/* Background Color */
+.bg-white-transp {
+  background-color: rgba(255, 255, 255, $opacity_bg);
+}
+.bg-gradient-primary {
+  background-image: $gradient_primary !important;
+  h1 {
+    color: #fff;
+  }
+}
+
+.bg-gradient-secondary {
+  background-image: $gradient_secondary !important;
+  h1 {
+    color: #fff;
+  }
+}
+
+/* Buttons */
+.btn-color-primary,
+.btn-color-primary:hover {
+  background-color: $primary;
+  color: #fff;
+}
+
+/* Text*/
+.text-color-primary {
+  color: $primary;
+}
+
+/* Global aspect */
+body {
+  h1 {
+    color: $primary;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+}
+
+:root {
+  --animate-delay: 0.2s;
+}
