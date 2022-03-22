@@ -7,7 +7,7 @@ export default {
     api: {
       host:
         process.env.NODE_ENV === "dev"
-          ? "http://localhost:1337"
+          ? "https://shopping-list-bdd.herokuapp.com"
           : "https://shopping-list-bdd.herokuapp.com",
       listes: "/listes",
       produits: "/produits",
@@ -123,7 +123,7 @@ export default {
   axios: {
     baseURL:
       process.env.NODE_ENV === "dev"
-        ? "http://localhost:1337"
+        ? "https://shopping-list-bdd.herokuapp.com"
         : "https://shopping-list-bdd.herokuapp.com",
   },
   /*

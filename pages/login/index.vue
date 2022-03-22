@@ -34,7 +34,7 @@
               >
                 <a
                   class="close position-absolute right-0 top-0 cursor-pointer"
-                  style="z-index:10"
+                  style="z-index: 10"
                   @click="
                     mdp_forget = false;
                     form.msg.status = null;
@@ -234,7 +234,7 @@
         md="6"
         :class="{
           'bg-gradient-primary': show_login,
-          'bg-gradient-secondary': !show_login
+          'bg-gradient-secondary': !show_login,
         }"
       >
         <transition
@@ -322,9 +322,9 @@ export default {
         error: null,
         msg: {
           status: null,
-          text: null
-        }
-      }
+          text: null,
+        },
+      },
     };
   },
   methods: {
@@ -336,8 +336,8 @@ export default {
         error: null,
         msg: {
           status: null,
-          text: null
-        }
+          text: null,
+        },
       };
     },
     login(e) {
@@ -346,9 +346,9 @@ export default {
       this.$axios
         .post(process.env.api.auth, {
           identifier: this.form.email,
-          password: this.form.password
+          password: this.form.password,
         })
-        .then(resp => {
+        .then((resp) => {
           // if its ok, get the jwt token, username and email (important to get the jwt)
           const { jwt } = resp.data;
           const { id, username, email } = resp.data.user;
@@ -369,7 +369,7 @@ export default {
             this.$router.push("/");
           }, 2000);
         })
-        .catch(err => {
+        .catch((err) => {
           this.loader = false;
           this.form.error = "Identifiant ou mot de passe incorrect";
         });
@@ -382,9 +382,9 @@ export default {
           username: this.form.username,
           email: this.form.email,
           password: this.form.password,
-          confirmed: false
+          confirmed: false,
         })
-        .then(resp => {
+        .then((resp) => {
           // Une fois le user loggué
           // on le redirect vers la page login
           this.loader = false;
@@ -394,7 +394,7 @@ export default {
             this.show_success_msg = false;
           }, 10000);
         })
-        .catch(err => {
+        .catch((err) => {
           this.loader = false;
           this.form.error = err.response;
         });
@@ -404,9 +404,9 @@ export default {
       // call the endpoint Strapi for authentification
       this.$axios
         .post(process.env.api.forgotPwd, {
-          email: this.form.email
+          email: this.form.email,
         })
-        .then(resp => {
+        .then((resp) => {
           // Une fois le mail envoyé
           // on notifie le user
           setTimeout(() => {
@@ -416,19 +416,19 @@ export default {
             this.loader = false;
           }, 3000);
         })
-        .catch(err => {
+        .catch((err) => {
           this.form.msg.status = "error";
           this.form.msg.text = err.message;
           this.loader = false;
         });
-    }
+    },
   },
   watch: {
-    show_login: function(val) {
+    show_login: function (val) {
       this.reset();
       window.scroll(0, 0);
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -449,6 +449,7 @@ body {
   align-items: center;
   font-weight: 600;
   font-size: 2rem;
+  padding: 0.5rem;
   margin: auto;
   .title-part {
     color: #fff;
@@ -469,6 +470,7 @@ body {
     align-items: center;
     font-weight: 800;
     font-size: 4rem;
+    padding: 0;
     .title-icon,
     .title-part.first-part {
       color: $primary;

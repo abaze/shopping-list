@@ -11,8 +11,8 @@ export const state = () => ({
     count_produits: 0,
     budget: 0,
     produits: [],
-    user: null
-  }
+    user: null,
+  },
 });
 
 // mutations for set variable
@@ -28,6 +28,7 @@ export const mutations = {
   },
   SET_LISTES(state, listes) {
     state.all_listes = listes;
+    console.log("listes : ", state.all_listes);
   },
   GLOBAL_DATA_PANIER(state, data) {
     state.panier.date = data.date;
@@ -39,9 +40,9 @@ export const mutations = {
   MAJ_PANIER(state, data) {
     // a chaque ajout on verifie si la categorie est deja dans le panier
     // si elle existe, on la supprime du panier apres avoir ajouter les nouvelles donnees
-    if (state.panier.produits.find(cat => cat.id_cat === data.id_cat)) {
+    if (state.panier.produits.find((cat) => cat.id_cat === data.id_cat)) {
       let index_to_remove = state.panier.produits.findIndex(
-        cat => cat.id_cat === data.id_cat
+        (cat) => cat.id_cat === data.id_cat
       );
       state.panier.produits.push(data);
       state.panier.produits.splice(index_to_remove, 1);
@@ -56,7 +57,7 @@ export const mutations = {
     state.panier.budget = 0;
     state.panier.produits = [];
     state.panier.user = null;
-  }
+  },
 };
 
 // actions to put some logic in ServerSide or ClientSide in all pages
@@ -74,13 +75,6 @@ export const actions = {
       // finally, send the data to SET_USER mutation in order to fill the user var
       commit("SET_USER", { id, jwt, username, email });
     }
-
-    // Pour tous les users (connectes ou non)
-    // on recupere tous les produits et categories
-    // on recupere les categories au chargement de la page via le store
-    await dispatch("GET_CATEGORIES");
-    // on recupere les produits au chargement de la page via le store
-    await dispatch("GET_PRODUITS");
   },
   async logout({ commit }) {
     // on vide notre var dans le state
@@ -91,12 +85,12 @@ export const actions = {
   async GET_CATEGORIES({ commit, state }) {
     if (!state.categories) {
       const resp = await this.$axios.get(process.env.api.categories);
-      const categories = resp.data.map(cat => {
+      const categories = resp.data.map((cat) => {
         return {
           id: cat.id,
           name: cat.name,
           image: `${process.env.base_image_url.categorie}/${cat.image}`,
-          color: cat.color
+          color: cat.color,
         };
       });
       commit("SET_CATEGORIES", categories);
@@ -105,13 +99,13 @@ export const actions = {
   async GET_PRODUITS({ commit, state }) {
     if (!state.all_products) {
       const resp = await this.$axios.get(process.env.api.produits);
-      let produits = resp.data.map(produit => {
+      let produits = resp.data.map((produit) => {
         return {
           id: produit.id,
           id_cat: produit.categories.id,
           name: produit.name,
           image: `${process.env.base_image_url.produit}/${produit.image}`,
-          price: produit.price
+          price: produit.price,
         };
       });
       commit("SET_PRODUITS", produits);
@@ -122,14 +116,14 @@ export const actions = {
       process.env.api.listes + "?user=" + state.user.id + "&_sort=date:ASC"
     );
     let listes = [];
-    resp.data.forEach(function(liste) {
+    resp.data.forEach(function (liste) {
       listes.push({
         id: liste.id,
         date: liste.date,
         price: liste.price,
         count_produits: liste.count_produits,
         budget: liste.budget,
-        produits: liste.produits
+        produits: liste.produits,
       });
     });
     commit("SET_LISTES", listes);
@@ -140,19 +134,19 @@ export const actions = {
     let data_listes = state.all_listes;
     // calcul depense moyenne
     const sum_price = data_listes
-      .map(liste => liste.price)
+      .map((liste) => liste.price)
       .reduce((sum, price) => sum + price, 0);
     const price_moy = parseFloat(sum_price / data_listes.length).toFixed(2);
 
     // calcul depense moyenne
     const sum_budget = data_listes
-      .map(liste => liste.budget)
+      .map((liste) => liste.budget)
       .reduce((sum, price) => sum + price, 0);
     const budget_moy = parseFloat(sum_budget / data_listes.length).toFixed(2);
 
     // calcul article moyen
     const sum_art = data_listes
-      .map(liste => liste.count_produits)
+      .map((liste) => liste.count_produits)
       .reduce((sum, count) => sum + count, 0);
     const articles_moy = parseInt(sum_art / data_listes.length);
 
@@ -160,7 +154,7 @@ export const actions = {
     let sum_days = 0;
     let frequence_moy = 0;
     if (data_listes.length >= 2) {
-      data_listes.forEach(function(liste, i) {
+      data_listes.forEach(function (liste, i) {
         if (data_listes[i + 1]) {
           const date1 = new Date(liste.date);
           const date2 = new Date(data_listes[i + 1].date);
@@ -175,17 +169,16 @@ export const actions = {
 
     //calcul depense par cat
     let depense_cat = [];
-    data_listes.forEach(function(liste, i) {
-      liste.produits.forEach(function(cat, y) {
-        if (!depense_cat.find(cats => cats.id_cat === cat.id_cat)) {
+    data_listes.forEach(function (liste, i) {
+      liste.produits.forEach(function (cat, y) {
+        if (!depense_cat.find((cats) => cats.id_cat === cat.id_cat)) {
           depense_cat.push({
             id_cat: cat.id_cat,
-            price: parseFloat(cat.price)
+            price: parseFloat(cat.price),
           });
         } else {
-          depense_cat.find(
-            cats => cats.id_cat == cat.id_cat
-          ).price += parseFloat(cat.price);
+          depense_cat.find((cats) => cats.id_cat == cat.id_cat).price +=
+            parseFloat(cat.price);
         }
       });
     });
@@ -206,12 +199,12 @@ export const actions = {
             frequence_moy,
             budget_moy,
             depense_cat,
-            user: state.user.id
+            user: state.user.id,
           },
           {
             headers: {
-              Authorization: `Bearer ${state.user.jwt}`
-            }
+              Authorization: `Bearer ${state.user.jwt}`,
+            },
           }
         );
       } else {
@@ -224,15 +217,15 @@ export const actions = {
             frequence_moy,
             budget_moy,
             depense_cat,
-            user: state.user.id
+            user: state.user.id,
           },
           {
             headers: {
-              Authorization: `Bearer ${state.user.jwt}`
-            }
+              Authorization: `Bearer ${state.user.jwt}`,
+            },
           }
         );
       }
     }
-  }
+  },
 };
