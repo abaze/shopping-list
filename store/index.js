@@ -2,9 +2,9 @@ let data_state = () => ({});
 // list of store variable
 export const state = () => ({
   user: null,
-  categories: null,
-  all_products: null,
-  all_listes: null,
+  categories: [],
+  all_products: [],
+  all_listes: [],
   panier: {
     date: null,
     price: 0,
@@ -28,7 +28,11 @@ export const mutations = {
   },
   SET_LISTES(state, listes) {
     state.all_listes = listes;
-    console.log("listes : ", state.all_listes);
+  },
+  RESET_STORE(state) {
+    state.categories = [];
+    state.all_products = [];
+    state.all_listes = [];
   },
   GLOBAL_DATA_PANIER(state, data) {
     state.panier.date = data.date;
@@ -63,7 +67,7 @@ export const mutations = {
 // actions to put some logic in ServerSide or ClientSide in all pages
 export const actions = {
   // nuxtClientInit is a custom plugin (il n'existe pas nativement d'équivalent à nuxtServerInit)
-  async nuxtClientInit({ commit, dispatch }, { req }) {
+  async nuxtClientInit({ state, commit, dispatch }, { req }) {
     // check if the localstorage exist
     if (
       window.localStorage.getItem("shoppingList-user-" + process.env.env_name)
@@ -74,6 +78,8 @@ export const actions = {
       );
       // finally, send the data to SET_USER mutation in order to fill the user var
       commit("SET_USER", { id, jwt, username, email });
+
+      dispatch("initStore");
     }
   },
   async logout({ commit }) {
@@ -82,34 +88,44 @@ export const actions = {
     // on vide localStorage
     window.localStorage.removeItem("shoppingList-user-" + process.env.env_name);
   },
-  async GET_CATEGORIES({ commit, state }) {
-    if (!state.categories) {
-      const resp = await this.$axios.get(process.env.api.categories);
-      const categories = resp.data.map((cat) => {
-        return {
-          id: cat.id,
-          name: cat.name,
-          image: `${process.env.base_image_url.categorie}/${cat.image}`,
-          color: cat.color,
-        };
-      });
-      commit("SET_CATEGORIES", categories);
+  async initStore({ state, dispatch }) {
+    // on get tous les produits, categories, listes (si ce nest pas deja fait)
+    if (state.user !== null && !state.categories.length) {
+      // on lance la recuperation des produits et categories globales
+      await dispatch("GET_PRODUITS");
+      await dispatch("GET_CATEGORIES");
+      await dispatch("GET_LISTES");
     }
   },
+  resetStore({ commit }) {
+    // on reset toutes les datas
+    commit("RESET_STORE");
+    commit("RESET_PANIER");
+  },
+  async GET_CATEGORIES({ commit, state }) {
+    const resp = await this.$axios.get(process.env.api.categories);
+    const categories = resp.data.map((cat) => {
+      return {
+        id: cat.id,
+        name: cat.name,
+        image: `${process.env.base_image_url.categorie}/${cat.image}`,
+        color: cat.color,
+      };
+    });
+    commit("SET_CATEGORIES", categories);
+  },
   async GET_PRODUITS({ commit, state }) {
-    if (!state.all_products) {
-      const resp = await this.$axios.get(process.env.api.produits);
-      let produits = resp.data.map((produit) => {
-        return {
-          id: produit.id,
-          id_cat: produit.categories.id,
-          name: produit.name,
-          image: `${process.env.base_image_url.produit}/${produit.image}`,
-          price: produit.price,
-        };
-      });
-      commit("SET_PRODUITS", produits);
-    }
+    const resp = await this.$axios.get(process.env.api.produits);
+    let produits = resp.data.map((produit) => {
+      return {
+        id: produit.id,
+        id_cat: produit.categories.id,
+        name: produit.name,
+        image: `${process.env.base_image_url.produit}/${produit.image}`,
+        price: produit.price,
+      };
+    });
+    commit("SET_PRODUITS", produits);
   },
   async GET_LISTES({ commit, state }) {
     const resp = await this.$axios.get(
@@ -132,6 +148,7 @@ export const actions = {
     await dispatch("GET_LISTES");
     let panier = state.panier;
     let data_listes = state.all_listes;
+
     // calcul depense moyenne
     const sum_price = data_listes
       .map((liste) => liste.price)

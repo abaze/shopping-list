@@ -1,8 +1,8 @@
 <template>
-  <div>
+  <div v-if="data_depense && categories.length">
     <box-stats-moy :data="data_depense"></box-stats-moy>
     <b-row align-h="start">
-      <b-col sm="6" xl="4" class="text-center">
+      <b-col sm="6" xl="4" class="text-center" v-if="all_listes.length">
         <line-chart
           class="m-3 shadow-sm bg-white rounded animate__animated animate__fadeInUp"
           v-if="!loader.line"
@@ -22,11 +22,10 @@
       </b-col>
       <b-col xl="4" class="p-3 text-center">
         <b-card
-          v-if="data_depense"
           no-body
           class="animate__animated animate__fadeInUp animate__delay-2s shadow-sm h-100"
         >
-          <b-card-header>
+          <b-card-header class="depense-by-cat">
             <h6>Dépenses par catégorie</h6>
           </b-card-header>
           <b-list-group flush class="rounded bg-white">
@@ -54,7 +53,7 @@
     <b-row v-if="best_product">
       <b-col class="p-3">
         <div
-          class="shadow-sm bg-white rounded animate__animated animate__fadeInRight"
+          class="zone-top-achat shadow-sm bg-white rounded animate__animated animate__fadeInRight"
         >
           <h5 class="p-3">
             Top achat depuis le
@@ -89,6 +88,9 @@
       </b-col>
     </b-row>
   </div>
+  <div v-else>
+    <h1 class="no-data w-100 text-center">Aucune données disponibles...</h1>
+  </div>
 </template>
 
 <script>
@@ -98,26 +100,6 @@ export default {
   middleware: ["auth"],
   components: {
     LineChart,
-  },
-  async asyncData({ app, params, store }) {
-    // on lance la recuperation des produits et categories globales
-    await store.dispatch("GET_PRODUITS");
-    await store.dispatch("GET_CATEGORIES");
-    await store.dispatch("GET_LISTES");
-
-    const resp = await app.$axios.get(
-      process.env.api.stats + "?user=" + store.state.user.id
-    );
-
-    const data = resp.data[0];
-    return {
-      data_depense: {
-        depense_moy: data.price_moy,
-        article_moy: data.articles_moy,
-        frequence_moy: data.frequence_moy,
-        depense_cat: data.depense_cat,
-      },
-    };
   },
   data: () => {
     return {
@@ -130,41 +112,57 @@ export default {
           duration: 3000,
         },
       },
+      data_depense: null,
     };
+  },
+  async fetch() {
+    const resp = await this.$axios.get(
+      process.env.api.stats + "?user=" + this.user.id
+    );
+
+    if (resp.data.length) {
+      const data = resp.data[0];
+      this.data_depense = {
+        depense_moy: data.price_moy,
+        article_moy: data.articles_moy,
+        frequence_moy: data.frequence_moy,
+        depense_cat: data.depense_cat,
+      };
+    }
   },
   computed: {
     ...mapState({
+      user: (state) => state.user,
       all_listes: (state) => state.all_listes,
       categories: (state) => state.categories,
       all_products: (state) => state.all_products,
     }),
+    // on passe par une computed pour eviter que la var head ne soit pas encore dispo
     data_chart() {
-      if (this.all_listes) {
-        return {
-          labels: this.all_listes.map(
-            (stat) =>
-              `${new Date(stat.date).getDate()}/${
-                new Date(stat.date).getMonth() + 1
-              }/${new Date(stat.date).getFullYear()}`
-          ),
-          datasets: [
-            {
-              label: "Courbe des dépenses",
-              backgroundColor: "#14ABEF",
-              borderColor: "rgb(70,151,255)",
-              data: this.all_listes.map((stat) => stat.price),
-              pointStyle: "rectRot",
-              pointRadius: 5,
-              pointBorderWidth: 5,
-              pointBorderColor: "orange",
-              pointBackgroundColor: "orange",
-            },
-          ],
-        };
-      }
+      return {
+        labels: this.all_listes.map(
+          (stat) =>
+            `${new Date(stat.date).getDate()}/${
+              new Date(stat.date).getMonth() + 1
+            }/${new Date(stat.date).getFullYear()}`
+        ),
+        datasets: [
+          {
+            label: "Courbe des dépenses",
+            backgroundColor: "#14ABEF",
+            borderColor: "rgb(70,151,255)",
+            data: this.all_listes.map((stat) => stat.price),
+            pointStyle: "rectRot",
+            pointRadius: 5,
+            pointBorderWidth: 5,
+            pointBorderColor: "orange",
+            pointBackgroundColor: "orange",
+          },
+        ],
+      };
     },
     data_doughnut() {
-      if (this.categories && this.data_depense) {
+      if (this.categories.length && this.data_depense) {
         return {
           labels: this.data_depense.depense_cat.map(
             (dcat) => this.categories.find((cat) => cat.id === dcat.id_cat).name
@@ -191,7 +189,7 @@ export default {
         { key: "prix", label: "Total TTC" },
       ];
       let produits_buy = [];
-      if (this.all_listes) {
+      if (this.all_listes.length) {
         this.all_listes.forEach(function (liste) {
           liste.produits.forEach(function (cat) {
             cat.produits.forEach(function (p, i) {
@@ -265,9 +263,66 @@ export default {
 };
 </script>
 
-<style>
-#topAchat td {
-  vertical-align: middle;
-  font-size: 0.8rem;
+<style lang="scss">
+@import "~assets/scss/vars/vars";
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.depense-by-cat {
+  &.card-header {
+    background-color: var(--red);
+    color: $color5;
+    margin-bottom: 0;
+
+    h6 {
+      margin: 0;
+    }
+  }
+}
+.zone-top-achat {
+  h5 {
+    background-color: $color1;
+    color: $color4;
+    margin-bottom: 0;
+  }
+  #topAchat {
+    thead {
+      tr {
+        background-color: $color5;
+        color: $color1;
+      }
+    }
+    th {
+      text-align: center;
+      font-size: clamp(1rem, 2vmin, 1.5rem);
+    }
+    td {
+      vertical-align: middle;
+      font-size: 1rem;
+      &[role="cell"] {
+        text-align: center;
+        border-bottom: 1px solid $color3;
+        &:not(:last-child) {
+          border-right: 1px solid $color3;
+        }
+        &:last-child {
+          color: var(--orange);
+          font-weight: bold;
+          font-size: 1.1rem;
+        }
+      }
+    }
+  }
+}
+.no-data {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  color: $color3;
+  transform: translate(-50%, -50%);
+  font-size: clamp(1rem, 5vmin, 3rem);
 }
 </style>

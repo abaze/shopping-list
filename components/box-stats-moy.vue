@@ -1,16 +1,16 @@
-!<template>
+!
+<template>
   <div>
     <b-row id="zoneMoy" align-h="start">
-      <b-col cols="6" md="3" class="mb-1">
+      <b-col v-if="data.depense_moy" md="3" class="mb-1">
         <b-card
-          v-if="data.depense_moy"
           no-body
           bg-variant="primary"
           text-variant="white"
           class="animate__animated animate__fadeInRight shadow-sm"
         >
           <b-card-header
-            class="d-flex justify-content-between align-items-center "
+            class="d-flex justify-content-between align-items-center"
           >
             <span>Dépense moyenne</span>
             <b-icon scale="2" icon="cash-stack"></b-icon>
@@ -22,9 +22,8 @@
           </b-card-body>
         </b-card>
       </b-col>
-      <b-col cols="6" md="3" class="mb-1">
+      <b-col v-if="data.article_moy" md="3" class="mb-1">
         <b-card
-          v-if="data.article_moy"
           no-body
           bg-variant="warning"
           text-variant="white"
@@ -43,9 +42,8 @@
           </b-card-body>
         </b-card>
       </b-col>
-      <b-col cols="6" md="3" class="mb-1">
+      <b-col v-if="data.frequence_moy" md="3" class="mb-1">
         <b-card
-          v-if="data.frequence_moy"
           no-body
           bg-variant="secondary"
           text-variant="white"
@@ -67,9 +65,8 @@
           </b-card-body>
         </b-card>
       </b-col>
-      <b-col cols="6" md="3" class="mb-1">
+      <b-col v-if="expansive_cat.price" md="3" class="mb-1">
         <b-card
-          v-if="expansive_cat.price"
           no-body
           bg-variant="success"
           text-variant="white"
@@ -84,7 +81,9 @@
           <b-card-body>
             <b-card-text class="text-center"
               ><span class="h4 mr-1">{{ expansive_cat.name }}</span>
-              <span>({{ expansive_cat.price }} €)</span></b-card-text
+              <span class="h5">
+                - {{ expansive_cat.price }} €</span
+              ></b-card-text
             >
           </b-card-body>
         </b-card>
@@ -101,16 +100,15 @@ export default {
       return {
         name: this.data.depense_cat[0]
           ? this.$store.state.categories.find(
-              cat => cat.id == this.data.depense_cat[0].id_cat
+              (cat) => cat.id == this.data.depense_cat[0].id_cat
             ).name
           : "nc",
         price: this.data.depense_cat[0]
           ? parseFloat(this.data.depense_cat[0].price).toFixed(2)
-          : "0"
+          : "0",
       };
-    }
+    },
   },
-  mounted() {}
 };
 </script>
 

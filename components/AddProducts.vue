@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="add-product">
     <b-card no-body class="mb-5">
       <b-card-header>
         <div class="d-flex align-items-center">
@@ -34,11 +34,11 @@
         </b-list-group>
       </b-card-body>
 
-      <b-card-footer>
+      <b-card-footer class="d-flex justify-content-end">
         <b-button
+          class="d-inline"
           :disabled="more_product"
           @click="addProductLine"
-          block
           variant="primary"
           >Ajouter un produit</b-button
         >
@@ -59,15 +59,15 @@ export default {
       total: {
         quantity: 0,
         ht: 0,
-        ttc: 0
+        ttc: 0,
       },
-      recovered_article: []
+      recovered_article: [],
     };
   },
   computed: {
     ...mapState({
-      all_products: state => state.all_products,
-      categories: state => state.categories
+      all_products: (state) => state.all_products,
+      categories: (state) => state.categories,
     }),
     list_product_components() {
       return this.product_components;
@@ -76,14 +76,14 @@ export default {
     categorie() {
       if (this.categories) {
         return this.categories.find(
-          cat => cat.id === parseInt(this.categorie_id)
+          (cat) => cat.id === parseInt(this.categorie_id)
         );
       }
     },
     more_product() {
       if (this.all_products) {
         const products_cat = this.all_products.filter(
-          produit => produit.id_cat === this.categorie.id
+          (produit) => produit.id_cat === this.categorie.id
         );
         return this.list_product_components.length === products_cat.length
           ? true
@@ -93,7 +93,7 @@ export default {
     total_quantity() {
       if (this.panier_cat.produits.length > 0) {
         return this.panier_cat.produits
-          .map(p => p.quantity)
+          .map((p) => p.quantity)
           .reduce((total, val) => total + val);
       } else {
         return 0;
@@ -102,11 +102,10 @@ export default {
     total_ht() {
       if (this.panier_cat.produits.length > 0) {
         return this.panier_cat.produits
-          .map(p => {
+          .map((p) => {
             let product_price = this.all_products.find(
-              article => article.id === p.id
+              (article) => article.id === p.id
             ).price;
-            console.log("product price : " + product_price);
             return parseFloat(product_price * parseInt(p.quantity)).toFixed(2);
           })
           .reduce((total, val) => parseFloat(total) + parseFloat(val));
@@ -120,7 +119,7 @@ export default {
         ? parseFloat(this.total_ht * 1.196).toFixed(2)
         : 0;
       return 0;
-    }
+    },
   },
   methods: {
     // fonction qui ajoute une nouvelle ligne de produit à la volée
@@ -134,13 +133,13 @@ export default {
       // on demande à Vue d'ajouter un item de manière reactive
       this.$set(this.product_components, id, {
         comp: AddSingleProductVue,
-        id: id_comp
+        id: id_comp,
       });
     },
     addPanier(produit) {
       // on verifie si le produit existe deja dans le panier_cat
       const index_product = this.panier_cat.produits.findIndex(
-        p => p.id === produit.id
+        (p) => p.id === produit.id
       );
       if (index_product < 0) {
         this.panier_cat.produits.push(produit);
@@ -155,13 +154,13 @@ export default {
     // on envoie l'id de lenregistrement a supprimer
     removePanier(id_product, id_component) {
       // on supprime le produit dans le panier_cat grace a l'id en param
-      this.panier_cat.produits = this.panier_cat.produits.filter(p => {
+      this.panier_cat.produits = this.panier_cat.produits.filter((p) => {
         return p.id != id_product;
       });
       this.panier_cat.price = this.total_ttc;
       // on recupere l'index du composant ayant 'id_component' en index
       const index_comp = this.product_components.findIndex(
-        c => c.id === id_component
+        (c) => c.id === id_component
       );
       // on dit à Vue de supprimer l'item de l'array de manière reactive
       this.$delete(this.product_components, index_comp);
@@ -174,7 +173,7 @@ export default {
     },
     majPanier(new_data) {
       let index_to_remove = this.panier_cat.produits.findIndex(
-        p => p.id === new_data.id
+        (p) => p.id === new_data.id
       );
       this.panier_cat.produits.push(new_data);
       this.panier_cat.produits.splice(index_to_remove, 1);
@@ -184,20 +183,20 @@ export default {
         "MAJ_PANIER",
         JSON.parse(JSON.stringify(this.panier_cat))
       );
-    }
+    },
   },
   created() {
     const _this = this;
     this.panier_cat = {
       id_cat: this.categorie_id,
       price: 0,
-      produits: []
+      produits: [],
     };
 
     if (this.recovered_data) {
-      this.recovered_data.forEach(function(cat) {
+      this.recovered_data.forEach(function (cat) {
         if (cat.id_cat === _this.categorie_id) {
-          cat.produits.forEach(function(produit) {
+          cat.produits.forEach(function (produit) {
             _this.recovered_article.push(produit);
             _this.addProductLine();
           });
@@ -207,8 +206,16 @@ export default {
       this.addProductLine();
     }
   },
-  mounted() {}
+  mounted() {},
 };
 </script>
 
-<style></style>
+<style lang="scss">
+@import "~/assets/scss/vars/vars";
+.add-product {
+  .card-header {
+    background-color: $color1;
+    color: $color5;
+  }
+}
+</style>

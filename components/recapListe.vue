@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="recapListe">
     <b-row align-h="center">
       <b-col lg="7">
         <b-card
@@ -8,16 +8,16 @@
           class="animate__animated animate__fadeInRight"
           variant="color-primary"
         >
-          <b-card-header class="bg-color-primary">
+          <b-card-header
+            class="bg-color-primary justify-content-center font-weight-bold"
+          >
             Récapitulatif courses du {{ data_liste.date }}
           </b-card-header>
           <b-list-group flush class="text-center">
             <b-list-group-item>
               <span class="prix_ttc"
                 >{{
-                  parseFloat(animateTTC)
-                    .toFixed(2)
-                    .replace(".", ",")
+                  parseFloat(animateTTC).toFixed(2).replace(".", ",")
                 }}
                 &#8364;</span
               >
@@ -45,33 +45,40 @@
           <b-col
             md="6"
             xl="4"
+            class="mb-4"
             v-for="(categorie, index) in data_by_cat"
             :class="
               'animate__animated animate__fadeInRight animate__delay-' +
-                index +
-                's'
+              index +
+              's'
             "
             :key="index"
           >
             <b-card no-body>
               <b-card-header class="bg-color-primary">
-                <div class="text-center">
-                  <div>
-                    <span class="h4 align-middle">{{ categorie.name }}</span>
-                  </div>
-                  <span class="h6">
-                    {{ parseFloat(categorie.total_price).toFixed(2) }} &#8364;/
-                    {{ categorie.total_product }} articles
-                  </span>
-                </div>
+                <span class="d-flex align-items-center">
+                  <img
+                    :src="categorie.image"
+                    :alt="categorie.name"
+                    width="50"
+                    class="mr-3"
+                  />
+                  <h2>{{ categorie.name }}</h2>
+                </span>
+                <span class="price"
+                  >{{
+                    parseFloat(categorie.total_price).toFixed(2)
+                  }}
+                  &#8364;</span
+                >
+                <div class="break"></div>
+                <progress-bar
+                  :max="data_liste.budget"
+                  :budget="categorie.total_price"
+                  :key="'cat-' + index"
+                />
               </b-card-header>
               <b-card-body>
-                <circle-bar
-                  :name="'cat-' + index"
-                  :value="categorie.total_price"
-                  :max="data_liste.budget"
-                  :color="'green'"
-                ></circle-bar>
                 <b-list-group flush>
                   <b-list-group-item
                     v-for="(article, index2) in categorie.list_articles"
@@ -107,9 +114,9 @@ export default {
     return {
       script: [
         {
-          src: "https://cdnjs.cloudflare.com/ajax/libs/gsap/3.2.4/gsap.min.js"
-        }
-      ]
+          src: "https://cdnjs.cloudflare.com/ajax/libs/gsap/3.2.4/gsap.min.js",
+        },
+      ],
     };
   },
   data: () => {
@@ -117,35 +124,37 @@ export default {
       data_liste: null,
       data_by_cat: [],
       animateTTC: 0,
-      TVA: 1.196
+      TVA: 1.196,
     };
   },
   computed: {
     ...mapState({
-      categories: state => state.categories,
-      all_products: state => state.all_products
-    })
+      categories: (state) => state.categories,
+      all_products: (state) => state.all_products,
+    }),
   },
   watch: {
-    "data_liste.prix": function(val) {
+    "data_liste.prix": function (val) {
       this.animateNumber({ val, targetVar: "animateTTC" });
-    }
+    },
   },
   methods: {
     async getListe(id) {
       const _this = this;
       if (id) {
-        await this.$axios.get(process.env.api.listes + "/" + id).then(data => {
-          let resp = data.data;
-          this.data_liste = {
-            date: resp.date,
-            count_produits: resp.count_produits,
-            prix: parseFloat(resp.price).toFixed(2),
-            budget: resp.budget
-          };
-          // on recupere tous les produits pour les tirer par cat (prix total/cat etc)
-          this.getCatData(resp.produits);
-        });
+        await this.$axios
+          .get(process.env.api.listes + "/" + id)
+          .then((data) => {
+            let resp = data.data;
+            this.data_liste = {
+              date: resp.date,
+              count_produits: resp.count_produits,
+              prix: parseFloat(resp.price).toFixed(2),
+              budget: resp.budget,
+            };
+            // on recupere tous les produits pour les tirer par cat (prix total/cat etc)
+            this.getCatData(resp.produits);
+          });
       }
     },
     getCatData(produits) {
@@ -153,28 +162,30 @@ export default {
       const data_by_cat = [];
       let i = 0;
       for (const produit of produits) {
-        let cat = this.categories.find(cat => cat.id === produit.id_cat);
+        let cat = this.categories.find((cat) => cat.id === produit.id_cat);
         this.data_by_cat.push({
+          image: cat.image,
           name: cat.name,
           total_price: 0,
           total_product: 0,
-          list_articles: []
+          list_articles: [],
         });
 
-        produit.produits.forEach(function(article) {
+        produit.produits.forEach(function (article) {
           const quantityArticle = parseInt(article.quantity);
           const prixUnitaire = _this.$store.state.all_products.find(
-            p => p.id === article.id
+            (p) => p.id === article.id
           ).price;
           const prixArticle = prixUnitaire * quantityArticle;
           _this.data_by_cat[i].list_articles.push({
-            name: _this.$store.state.all_products.find(p => p.id === article.id)
-              .name,
+            name: _this.$store.state.all_products.find(
+              (p) => p.id === article.id
+            ).name,
             image: _this.$store.state.all_products.find(
-              p => p.id === article.id
+              (p) => p.id === article.id
             ).image,
             quantity: quantityArticle,
-            price: parseFloat(prixArticle * _this.TVA).toFixed(2)
+            price: parseFloat(prixArticle * _this.TVA).toFixed(2),
           });
 
           _this.data_by_cat[i].total_price =
@@ -188,25 +199,55 @@ export default {
     animateNumber({ val, duration = 1, targetVar }) {
       gsap.to(this.$data, {
         duration: duration,
-        [targetVar]: val
+        [targetVar]: val,
       });
-    }
+    },
   },
   mounted() {
     this.getListe(this.id);
-  }
+  },
 };
 </script>
 
-<style scoped>
+<style lang="scss">
+@import "~assets/scss/vars/vars";
+.recapListe {
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    background-color: $color2;
+
+    .price {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--yellow);
+    }
+  }
+  .card-body {
+    background-color: #fff;
+    .list-group-item {
+      background-color: transparent;
+      &:not(:last-child) {
+        border-bottom: 1px solid $color3;
+      }
+    }
+  }
+  h2 {
+    line-height: 1;
+    margin-bottom: 0;
+  }
+}
 .prix_ttc {
-  font-size: 5rem;
+  font-size: 4rem;
   font-weight: bold;
+  color: var(--orange);
 }
 .item-by-cat {
-  font-size: 11px;
+  font-size: 1rem;
 }
 .info-text {
-  font-size: 0.7rem;
+  font-size: 0.9rem;
 }
 </style>

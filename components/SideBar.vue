@@ -8,7 +8,7 @@
       <b-overlay :show="show_overlay" rounded="sm" class="min-vh-100">
         <b-nav pills vertical variant="primary">
           <b-nav-item class="brand" to="/">
-            <b-icon icon="upc-scan" class="mr-2"></b-icon>
+            <b-icon icon="cart" class="mr-2"></b-icon>
             Shopping List
           </b-nav-item>
           <b-nav-item exact exact-active-class="active" to="/">
@@ -49,11 +49,12 @@
 </template>
 
 <script>
+import { mapActions } from "vuex";
 export default {
   props: ["expand"],
   data: () => {
     return {
-      show_overlay: false
+      show_overlay: false,
     };
   },
   computed: {
@@ -62,9 +63,12 @@ export default {
     },
     username() {
       return this.$store.state.user.username;
-    }
+    },
   },
   methods: {
+    ...mapActions({
+      resetStore: "resetStore",
+    }),
     logout() {
       const _this = this;
       this.show_overlay = true;
@@ -73,16 +77,17 @@ export default {
           title: "Déconnexion réussie",
           toaster: "b-toaster-bottom-right",
           appendToast: true,
-          variant: "danger"
+          variant: "danger",
         });
         setTimeout(() => {
           this.show_overlay = false;
+          this.resetStore();
           // go to login page
           this.$router.push("/login");
         }, 2000);
       });
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -95,16 +100,16 @@ export default {
 }
 
 #leftNav .nav-item:not(.brand) a {
-  color: rgba(255, 255, 255, 0.7);
+  color: $color4;
   font-size: 1rem;
-  font-weight: 300;
+  font-weight: 500;
 }
 .brand {
   text-align: center;
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 .brand > a {
-  color: #fff !important;
+  color: $color5;
   font-weight: 500;
   font-size: 1.4rem;
 }

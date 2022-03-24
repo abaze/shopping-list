@@ -1,9 +1,15 @@
 /* Var Color */
-$primary: #174069;
-$secondary: #0d2762;
+$color1: #0566e4;
+$color2: #079bff;
+$color3: #08d5ff;
+$color4: #81fff9;
+$color5: #d1fff7;
+
+$primary: $color1;
+$secondary: $color2;
 
 /* Gradient */
-$gradient_primary: linear-gradient(45deg, #0a151f, $primary);
+$gradient_primary: linear-gradient(47deg, $color1, $color2);
 $gradient_secondary: linear-gradient(45deg, #3480cb, $secondary);
 
 /* Opacity */

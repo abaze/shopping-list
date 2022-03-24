@@ -1,5 +1,5 @@
 <template>
-  <div class="wrap d-flex align-items-start min-vh-100">
+  <div class="wrap d-flex align-items-start">
     <side-bar :expand="expand"></side-bar>
 
     <b-container id="content_page" fluid class="vh-100 overflow-auto p-0">
@@ -13,22 +13,24 @@
 export default {
   data: () => {
     return {
-      expand: false
+      expand: false,
     };
   },
   methods: {
     sideBarToggle(val) {
       this.expand = val;
-    }
-  }
+    },
+  },
 };
 </script>
 
-<style>
-#content_page {
-  background-color: rgb(248, 247, 255);
-}
+<style lang="scss">
+@import "~assets/scss/vars/vars";
+$navBarH: 62px;
 #content_nuxt {
+  position: relative;
+  min-height: calc(100% - $navBarH);
   padding: 1rem;
+  background-color: $color2;
 }
 </style>

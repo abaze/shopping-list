@@ -3,7 +3,7 @@
     <b-dropdown
       v-if="!is_selected_product"
       block
-      variant="success"
+      variant="warning"
       class="mb-2"
     >
       <template slot="button-content">
@@ -66,28 +66,28 @@ export default {
       is_selected_product: false,
       product_quantity: 1,
       selected_product: null,
-      id_saved_panier: null
+      id_saved_panier: null,
     };
   },
   computed: {
     ...mapState({
-      all_products: state => state.all_products,
-      panier: state => state.panier
-    })
+      all_products: (state) => state.all_products,
+      panier: (state) => state.panier,
+    }),
   },
   methods: {
     get_produits_of_cat() {
       if (this.all_products) {
         const produits_cat = this.all_products.filter(
-          produit => produit.id_cat === this.categorie.id
+          (produit) => produit.id_cat === this.categorie.id
         );
         if (
-          this.panier.produits.find(cat => cat.id_cat === this.categorie.id)
+          this.panier.produits.find((cat) => cat.id_cat === this.categorie.id)
         ) {
           const product_panier = this.panier.produits
-            .find(cat => cat.id_cat === this.categorie.id)
-            .produits.map(p => p.id);
-          return produits_cat.filter(p => !product_panier.includes(p.id));
+            .find((cat) => cat.id_cat === this.categorie.id)
+            .produits.map((p) => p.id);
+          return produits_cat.filter((p) => !product_panier.includes(p.id));
         } else {
           return produits_cat;
         }
@@ -114,28 +114,28 @@ export default {
         id: produit.id,
         quantity: this.product_quantity,
         price: produit.price,
-        image: produit.image
+        image: produit.image,
       };
 
       this.$emit("addPanier", {
         id: produit.id,
-        quantity: this.product_quantity
+        quantity: this.product_quantity,
       });
-    }
+    },
   },
   watch: {
-    product_quantity: function(val) {
+    product_quantity: function (val) {
       // a chaque changement de la quantite, on envoie les info maj au parent
       if (this.selected_product) {
         this.$emit("majPanier", {
           id: this.selected_product.id,
-          quantity: val
+          quantity: val,
         });
       }
     },
-    "panier.produits": function(val) {
+    "panier.produits": function (val) {
       this.produits_of_cat = this.get_produits_of_cat();
-    }
+    },
   },
   mounted() {
     if (this.all_products) {
@@ -145,7 +145,7 @@ export default {
       this.select_product(this.recovered_produit);
       this.product_quantity = this.recovered_produit.quantity;
     }
-  }
+  },
 };
 </script>
 

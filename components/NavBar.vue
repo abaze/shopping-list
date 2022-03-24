@@ -28,11 +28,12 @@
 </template>
 
 <script>
+import { mapActions } from "vuex";
 export default {
   data: () => {
     return {
       expand: false,
-      show_btn_menu: null
+      show_btn_menu: null,
     };
   },
   computed: {
@@ -41,19 +42,24 @@ export default {
     },
     username() {
       return this.$store.state.user.username;
-    }
+    },
   },
   watch: {
-    "$route.path": function() {
+    "$route.path": function () {
       if (window.innerWidth < 992) {
         this.toggleSideBar(false);
       }
-    }
+    },
   },
   methods: {
+    ...mapActions({
+      resetStore: "resetStore",
+    }),
     logout() {
       this.$store.dispatch("logout").then(() => {
-        this.$router.push("/");
+        this.resetStore();
+        // go to login page
+        this.$router.push("/login");
       });
     },
     toggleSideBar(expand) {
@@ -72,21 +78,30 @@ export default {
           this.toggleSideBar(true);
         }
       }
-    }
+    },
   },
   mounted() {
     window.addEventListener("resize", this.onResize);
     this.onResize();
-  }
+  },
 };
 </script>
 
-<style>
+<style lang="scss">
+@import "~assets/scss/vars/vars";
 #navBar {
-  background-color: #fff;
+  background-color: $color1;
   box-shadow: 0 5px 15px rgba(57, 98, 254, 0.07),
     0 3px 6px rgba(117, 108, 254, 0.02);
+  z-index: 10;
+
+  .nav-item {
+    .nav-link {
+      color: $color4;
+    }
+  }
 }
+
 .btn:focus {
   box-shadow: none;
 }
