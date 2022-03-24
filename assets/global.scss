@@ -77,15 +77,17 @@ body {
 
 /* Global aspect */
 
-h1 {
+h1,
+.h1 {
   color: $color5;
   font-weight: 800;
   text-transform: uppercase;
-  font-size: 2rem;
+  font-size: clamp(1rem, 3vmin, 2rem);
 }
-h2 {
+h2,
+.h2 {
   color: $color4;
   font-weight: 400;
   text-transform: uppercase;
-  font-size: 1.5rem;
+  font-size: clamp(0.8rem, 3vmin, 1.5rem);
 }
